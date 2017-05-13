@@ -13,9 +13,9 @@ class Table
 	sf::Texture texture;
 	sf::Sprite sprite;
 
-	// graphics variables go here
-
 	friend class Ball;
+
+	// graphics variables go here
 
 public:
 	Table();

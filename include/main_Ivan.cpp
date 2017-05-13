@@ -1,15 +1,14 @@
 #include "ball.hpp"
 #include "table.hpp"
+#include <cmath>
 
-#define UBUNTU_PANEL_X 62
-#define UBUNTU_PANEL_Y 54
 #define BALL_RADIUS 15
 
 int main(int argc, char const *argv[])
 {
     // store screen size
-    unsigned int window_width = sf::VideoMode::getDesktopMode().width;// - UBUNTU_PANEL_X;
-    unsigned int window_height = sf::VideoMode::getDesktopMode().height;// - UBUNTU_PANEL_Y;
+    unsigned int window_width = sf::VideoMode::getDesktopMode().width;
+    unsigned int window_height = sf::VideoMode::getDesktopMode().height;
 
     // create a fullscreen window
     sf::RenderWindow window( sf::VideoMode( window_width, window_height ), "2DeadPool", sf::Style::Fullscreen );
@@ -25,14 +24,12 @@ int main(int argc, char const *argv[])
     Table table( center, width, height );
 
     // create a test ball
-    sf::Vector2f ball_position( center );
-    sf::Vector2f ball_velocity( 10, 10 );
-    float angular_velocity = (float)0;
-    float angular_acceleration = (float)0;
+    sf::Vector2f ball_position( sf::Vector2f( 210, 500 ) );
+    sf::Vector2f ball_velocity( .2, -5 );
     int radius = BALL_RADIUS;
     float mass = (float)1;
     float friction = (float)0.018;
-    Ball ball( ball_position, ball_velocity, angular_velocity, angular_acceleration, radius, mass, friction );
+    Ball ball( ball_position, ball_velocity, radius, mass, friction );
 
     // set table type
     const std::string table_file = "../bin/Table.png";
@@ -42,7 +39,7 @@ int main(int argc, char const *argv[])
     while ( window.isOpen() )
     {
         // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
+        sf::Event event; 
         while ( window.pollEvent( event ) )
         {
             // "close requested" event: we close the window
@@ -50,6 +47,7 @@ int main(int argc, char const *argv[])
                 window.close();
         }
 
+        // testing ball appearance
         sf::CircleShape shape( BALL_RADIUS );
         shape.setFillColor( sf::Color( 255, 255, 255 ) );
         ball.update( (float)1, table );
@@ -59,30 +57,6 @@ int main(int argc, char const *argv[])
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         window.draw( table.getSprite() );
         window.draw( shape );
-        /*std::vector<sf::CircleShape> pockets_circle( table.pockets.size());
-        for (int i = 0; i < pockets_circle.size(); ++i)
-        {
-            if ( ( i == 1 ) || ( i == 4 ) )
-            {
-                pockets_circle[i] = sf::CircleShape( table.middle_radius );
-                pockets_circle[i].setPosition ( table.pockets[i].x - table.middle_radius, table.pockets[i].y - table.middle_radius + 70 );
-            }
-            else
-            {
-                pockets_circle[i] = sf::CircleShape( table.corner_radius );
-                pockets_circle[i].setPosition ( table.pockets[i].x - table.corner_radius, table.pockets[i].y - table.corner_radius );
-            }
-            pockets_circle[i].setFillColor( sf::Color( 255, 0, 0 ) );
-            window.draw( pockets_circle[i] );
-        }
-        std::vector<sf::CircleShape> border_circle( table.borders.size() );
-        for (int i = 0; i < border_circle.size(); ++i)
-        {
-            border_circle[i] = sf::CircleShape( BALL_RADIUS );
-            border_circle[i].setFillColor( sf::Color( 0, 255, 0 ) );
-            border_circle[i].setPosition ( table.borders[i].x - ball.getRadius(), table.borders[i].y - ball.getRadius() );
-            window.draw( border_circle[i] );
-        }*/
         window.display();
     }
 
