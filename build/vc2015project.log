@@ -1,0 +1,12 @@
+﻿  Ball.cpp
+..\include\Ball.cpp(40): warning C4244: return: преобразование "float" в "int", возможна потеря данных
+..\include\Ball.cpp(54): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+..\include\Ball.cpp(55): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+..\include\Ball.cpp(56): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+  Создание кода
+  3 of 269 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  vc2015project.vcxproj -> D:\programming\seminars\2DeadPool\vc2015project\..\bin\vc2015project.exe
+  vc2015project.vcxproj -> D:\programming\seminars\2DeadPool\vc2015project\..\bin\vc2015project.pdb (Full PDB)
