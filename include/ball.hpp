@@ -14,10 +14,12 @@ class Ball
 	float friction;
 
 	// graphics variables go here
+	sf::Texture texture;
+	sf::Vector2f scale;
+	unsigned int style;
 
 public:
-	Ball();
-	Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_, float mass_, float friction_ );
+	Ball( const sf::Vector2f& position_, const string name, int radius_, const int style_ = 1, const sf::Vector2f& velocity_ = sf::Vector2f (0.0f, 0.0f),  float mass_ = 1.0f, float friction_ = 0.018f );
 	~Ball();
 
 	int update( float time, const Table& table );
@@ -28,4 +30,5 @@ public:
 	float getMass() const;
 
 	// graphics functions go here
+	void draw(sf::RenderWindow &window);
 };
