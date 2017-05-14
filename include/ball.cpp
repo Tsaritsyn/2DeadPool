@@ -1,5 +1,6 @@
 #include <cmath>
 #include "ball.hpp"
+#include <string>
 
 #define MIN_SPEED .1
 #define REFLECTION .7
@@ -19,22 +20,23 @@ float getLength( const sf::Vector2f& vector )
 	return sqrt( vector.x * vector.x + vector.y * vector.y );
 }
 
-Ball::Ball()
-{
-	position = sf::Vector2f( 0, 0 );
-	velocity = sf::Vector2f( 0, 0 );
-	radius = 15;
-	mass = (float)1;
-	friction = (float)0.018;
-}
-
-Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_, float mass_, float friction_ )
+Ball::Ball( const sf::Vector2f& position_, const string name, int radius_, const int style_, const sf::Vector2f& velocity_, float mass_, float friction_ )
 {
 	position = position_;
 	velocity = velocity_;
 	radius = radius_;
 	mass = mass_;
 	friction = friction_;
+	style = style_;
+	sf::Image image;
+	sf::Vector2i text_size(188, 188);
+	sf::Vector2i text_pos(215 * ((style - 1) % 4), 265 * ((style - 1) / 4));
+	sf::IntRect rect(text_pos.x, text_pos.y, text_size.x, text_size.y);
+	image.loadFromFile(name);
+	image.createMaskFromColor(sf::Color::White);
+	texture.loadFromImage(image, rect);
+	scale.x = 2 * R / texture.getSize().x;
+	scale.y = 2 * R / texture.getSize().y;
 }
 
 Ball::~Ball() {}
@@ -130,4 +132,13 @@ int Ball::getRadius() const
 float Ball::getMass() const
 {
 	return mass;
+}
+
+void Ball::draw(sf::RenderWindow &window)
+{
+	sf::Sprite sprite;
+	sprite.setTexture(texture);
+	sprite.setScale(scale);
+	sprite.setPosition(position);
+	window.draw(sprite);
 }
