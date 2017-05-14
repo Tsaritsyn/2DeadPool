@@ -12,7 +12,11 @@ class Ball
 	int radius;
 	float mass;
 	float friction;
-
+	
+	sf::Texture texture;
+	sf::Vector2f scale;
+	unsigned int style;
+	
 	// graphics variables go here
 
 public:
@@ -23,9 +27,10 @@ public:
 	int update( float time, const Table& table );
 	sf::Vector2f getPosition() const;
 	sf::Vector2f getVelocity() const;
-
+	
 	int getRadius() const;
 	float getMass() const;
 
 	// graphics functions go here
+	void draw(sf::RenderWindow &window);
 };
