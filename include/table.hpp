@@ -3,6 +3,7 @@
 
 class Table
 {
+public:
 	sf::Vector2f position;	// geometrical center of the table
 	unsigned int width, height;
 	float corner_radius, middle_radius;
@@ -18,11 +19,8 @@ class Table
 	// graphics variables go here
 
 public:
-	Table();
-	Table( const sf::Vector2f& position_, unsigned int width_, unsigned int height_ );
+	Table( const sf::Vector2f& position_, unsigned int width_, unsigned int height_, const std::string& name );
 	~Table();
-
-	void setType( const std::string& name );
 
 	sf::Vector2f getPosition() const;
 	unsigned int getWidth() const;

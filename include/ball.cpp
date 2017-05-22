@@ -1,8 +1,10 @@
-#include <cmath>
 #include "ball.hpp"
+#include <iostream>
+#include <cmath>
 
 #define MIN_SPEED .1
 #define REFLECTION .7
+#define FRICTION .018
 
 float getInterval( const sf::Vector2f& point1, const sf::Vector2f& point2 )
 {
@@ -19,22 +21,11 @@ float getLength( const sf::Vector2f& vector )
 	return sqrt( vector.x * vector.x + vector.y * vector.y );
 }
 
-Ball::Ball()
-{
-	position = sf::Vector2f( 0, 0 );
-	velocity = sf::Vector2f( 0, 0 );
-	radius = 15;
-	mass = (float)1;
-	friction = (float)0.018;
-}
-
-Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_, float mass_, float friction_ )
+Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_ )
 {
 	position = position_;
 	velocity = velocity_;
 	radius = radius_;
-	mass = mass_;
-	friction = friction_;
 }
 
 Ball::~Ball() {}
@@ -48,21 +39,13 @@ int Ball::update( float time, const Table& table )
 	sf::Vector2f normal_velocity;
 	// a direction from the ball to the corner of a pocket
 	sf::Vector2f normal;
-	// future position if there were no borders and pockets
-	sf::Vector2f future_position;
 
 	// moving the ball as if there were no borders
 	if ( speed > MIN_SPEED )
 	{
-		sf::Vector2f acceleration = -velocity / speed * friction;
-		future_position = position + velocity * time + acceleration * time * time / (float)2;
-
-		sf::Vector2f future_velocity = velocity + acceleration * time;
-		if ( ( future_velocity.x * velocity.x < 0 ) || ( future_velocity.y * velocity.y < 0 ) )
-			velocity = sf::Vector2f( 0, 0 );
-		else
-			velocity = future_velocity;
-		position = future_position;
+		sf::Vector2f acceleration = -velocity / speed * (float)FRICTION;
+		position += velocity * time + acceleration * time * time / (float)2;
+		velocity += acceleration * time;
 	}
 	else
 	{
@@ -70,10 +53,17 @@ int Ball::update( float time, const Table& table )
 		return 1;
 	}
 
+	// checks if the ball is inside of a pocket
+	if ( getInterval( position, table.pockets[0] ) < table.corner_radius )
+	{
+		velocity.x = velocity.y = 0.0;
+		return 0;
+	}
+
 	// reflection from the pockets' corners
 	for (int i = 0; i < table.borders.size(); ++i)
 	{
-		if ( getInterval( future_position, table.borders[i] ) < radius )
+		if ( getInterval( position, table.borders[i] ) < radius )
 		{
 			normal = table.borders[i] - position;
 			float normal_length = getLength( normal );
@@ -85,28 +75,35 @@ int Ball::update( float time, const Table& table )
 		}
 	}
 
-	// reflection from the borders
-	if ( ( ( position.y < table.borders[0].y + radius ) && ( position.x >= table.borders[0].x ) && ( position.x <= table.borders[1].x ) ) ||
+	// reflection from horizontal borders
+	if ( ( ( position.x >= table.borders[0].x ) && ( position.x <= table.borders[1].x ) ) || 
 		( ( position.x >= table.borders[2].x ) && ( position.x <= table.borders[3].x ) ) )
 	{
-		position.y = ( table.borders[0].y + radius ) * 2 - position.y;
-		velocity.y = -velocity.y * (float)REFLECTION;
+		if ( position.y < table.borders[0].y + radius )
+		{
+			position.y = ( table.borders[0].y + radius ) * 2 - position.y;
+			velocity.y = -velocity.y * (float)REFLECTION;
+		}
+		if ( position.y > table.borders[6].y - radius )
+		{
+			position.y = ( table.borders[6].y - radius ) * 2 - position.y;
+			velocity.y = -velocity.y * (float)REFLECTION;
+		}
 	}
-	if ( ( position.x > table.borders[4].x - radius ) && ( position.y >= table.borders[4].y ) && ( position.y <= table.borders[5].y ) )
+
+	// reflection from vertical borders
+	if ( ( position.y >= table.borders[4].y ) && ( position.y <= table.borders[5].y ) )
 	{
-		position.x = ( table.borders[5].x - radius ) * 2 - position.x;
-		velocity.x = -velocity.x * (float)REFLECTION;
-	}
-	if ( ( ( position.y > table.borders[6].y - radius ) && ( position.x <= table.borders[6].x ) && ( position.x >= table.borders[7].x ) ) ||
-		( ( position.x <= table.borders[8].x ) && ( position.x >= table.borders[9].x ) ) )
-	{
-		position.y = ( table.borders[7].y - radius ) * 2 - position.y;
-		velocity.y = -velocity.y * (float)REFLECTION;
-	}
-	if ( ( position.x > table.borders[10].x + radius ) && ( position.y >= table.borders[10].y ) && ( position.y <= table.borders[11].y ) )
-	{
-		position.x = ( table.borders[11].x + radius ) * 2 - position.x;
-		velocity.x = -velocity.x * (float)REFLECTION;
+		if ( position.x > table.borders[5].x - radius )
+		{
+			position.x = ( table.borders[5].x - radius ) * 2 - position.x;
+			velocity.x = -velocity.x * (float)REFLECTION;
+		}
+		if ( position.x < table.borders[10].x + radius )
+		{
+			position.x = ( table.borders[10].x + radius ) * 2 - position.x;
+			velocity.x = -velocity.x * (float)REFLECTION;
+		}
 	}
 
 	return 1;
@@ -125,9 +122,4 @@ sf::Vector2f Ball::getVelocity() const
 int Ball::getRadius() const
 {
 	return radius;
-}
-
-float Ball::getMass() const
-{
-	return mass;
 }
