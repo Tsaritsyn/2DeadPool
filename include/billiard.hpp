@@ -18,5 +18,4 @@ public:
 	void setDirection( const sf::Vector2f& direction_ );
 	void setRotation( const sf::Vector2f& mousePosition_ );
 	void setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite );
-	//void hitAnimation( const sf::RenderWindow& window );
 };

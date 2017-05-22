@@ -1,4 +1,5 @@
 #include "billiard.hpp"
+#include "vector_operations.hpp"
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -57,8 +58,12 @@ void Billiard::setRotation( const sf::Vector2f& mousePosition_ )
 
 void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite )
 {
-	int mouseDelta = 0;
-	sf::Vector2f mousePosition;
+	// hit power
+	float power = 0.0;
+	sf::Vector2f mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
+	float initial_power = getLength( mouse_position - position );			// zero hit power level
+
+	// power bar
 	sf::RectangleShape powerBar( sf::Vector2f( window.getSize().x / 20, window.getSize().y / 3 ) );
 	powerBar.setPosition( sf::Vector2f( window.getSize().x * .925, window.getSize().y * .5 ) );
 	sf::RectangleShape powerBar_color;
@@ -66,37 +71,37 @@ void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite 
 
 	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
 	{
-		// mouseWheel control
-		sf::Event event;
-		while ( window.pollEvent( event ) )
-       		if ( event.type == sf::Event::MouseWheelMoved )
-        		mouseDelta += 2 * event.mouseWheel.delta;
-        if ( mouseDelta < 0)
-        	mouseDelta = 0;
+		// retrieving the hit power
+		mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
+		power = ( getLength( mouse_position - position ) - initial_power ) / 5;
+		if ( power > MAX_POWER )
+        	power = MAX_POWER;
+        if ( power < 0 )
+        	power = 0;
 
-       	// power bar
-        if ( mouseDelta > MAX_POWER )
-        	mouseDelta = MAX_POWER;
-		powerBar_color.setSize( sf::Vector2f( powerBar.getSize().x,	powerBar.getSize().y * mouseDelta / MAX_POWER ) );
+       	// power bar setup
+		powerBar_color.setSize( sf::Vector2f( powerBar.getSize().x,	powerBar.getSize().y * power / MAX_POWER ) );
 		powerBar_color.setPosition( sf::Vector2f( window.getSize().x * .925, 
-			window.getSize().y * 5 / 6 - powerBar.getSize().y * mouseDelta / MAX_POWER ) );
+			window.getSize().y * 5 / 6 - powerBar.getSize().y * power / MAX_POWER ) );
 
-        // billiard rotation
-        mousePosition = sf::Vector2f( sf::Mouse::getPosition( window ) );
-        setRotation( mousePosition );
+        // billiard texture displacement
+        mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
+        setRotation( mouse_position );
+        sprite.setPosition( position - getNorm( direction ) * power * (float)2 );
+
+        // test ball
+        sf::CircleShape ball_shape( 15 );
+        ball_shape.setFillColor( sf::Color( 255, 255, 255 ) );
+        ball_shape.setPosition ( position.x - 15, position.y - 15 );
 
         // displaying everything
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         window.draw( table_sprite );
+        window.draw( ball_shape );
         window.draw( sprite );
         window.draw( powerBar );
         window.draw( powerBar_color );
         window.display();
 	}
-	std::cout << mouseDelta << std::endl;
+	sprite.setPosition( position );
 }
-
-/*void Billiard::hitAnimation( const sf::RenderWindow& window )
-{
-	sf::Vector2f temp_position = ball_to_hit - direction / getLength1( direction ) * (float)HIT_DISTANCE;
-}*/
