@@ -1,4 +1,5 @@
 #pragma once
+#include "ball.hpp"
 #include <SFML/Graphics.hpp>
 
 class Billiard
@@ -12,10 +13,15 @@ class Billiard
 public:
 	Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction_, const std::string& filename );
 	~Billiard();
+
 	const sf::Vector2f& getPosition() const;
 	const sf::Sprite& getSprite() const;
+
 	void setPosition( const sf::Vector2f& position_ );
 	void setDirection( const sf::Vector2f& direction_ );
 	void setRotation( const sf::Vector2f& mousePosition_ );
-	void setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite );
+
+	sf::Vector2f setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite, const sf::Vector2f& cue_ball );
+
+	void draw( sf::RenderWindow& window );
 };

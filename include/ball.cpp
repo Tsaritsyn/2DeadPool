@@ -7,11 +7,63 @@
 #define REFLECTION .7
 #define FRICTION .018
 
-Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_ )
+Ball::Ball(  )
+{
+	position = velocity = sf::Vector2f( 0.0, 0.0 );
+	radius = 1;
+	style = 0;
+}
+
+Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, float radius_,
+	const std::string& name, int style_ )
 {
 	position = position_;
 	velocity = velocity_;
 	radius = radius_;
+	style = style_;
+
+	sf::Image image;
+	sf::Vector2i text_size(188, 188);
+	int y = 0;
+	switch ( style / 4 )
+	{
+	case 1:
+		y = 265;
+		break;
+	case 2:
+		y = 550;
+		break;
+	case 3:
+		y = 835;
+		break;
+	default:
+		break;
+	}
+	int x = 0;
+	switch ( style % 4 )
+	{
+	case 1:
+		x = 215;
+		break;
+	case 2:
+		x = 425;
+		break;
+	case 3:
+		x = 640;
+		break;
+	default:
+		break;
+	}
+	// magic and you get image and rect - input params for loadFromImage
+	sf::Vector2i text_pos(x, y);
+	sf::IntRect rect(text_pos.x, text_pos.y, text_size.x, text_size.y);
+	image.loadFromFile(name);
+	image.createMaskFromColor(sf::Color::White);
+
+	texture.loadFromImage(image, rect);
+	sf::Vector2f scale( 2 * radius / texture.getSize().x, 2 * radius / texture.getSize().y );
+	sprite.setScale( scale );
+	sprite.setPosition( position - sf::Vector2f( radius, radius ) );
 }
 
 Ball::~Ball() {}
@@ -40,10 +92,24 @@ int Ball::update( float time, const Table& table )
 	}
 
 	// checks if the ball is inside of a pocket
-	if ( getInterval( position, table.pockets[0] ) < table.corner_radius )
+	for (int i = 0; i < table.pockets.size(); ++i)
 	{
-		velocity.x = velocity.y = 0.0;
-		return 0;
+		if ( ( i == 1 ) || ( i == 4 ) )
+		{
+			if ( getInterval( position, table.pockets[i] ) < table.middle_radius )
+			{
+				velocity.x = velocity.y = 0.0;
+				return 0;
+			}
+		}
+		if ( ( i != 1 ) && ( i != 4 ) )
+		{
+			if ( getInterval( position, table.pockets[i] ) < table.corner_radius )
+			{
+				velocity.x = velocity.y = 0.0;
+				return 0;
+			}	
+		}
 	}
 
 	// reflection from the pockets' corners
@@ -108,4 +174,15 @@ sf::Vector2f Ball::getVelocity() const
 int Ball::getRadius() const
 {
 	return radius;
+}
+
+void Ball::setVelocity( const sf::Vector2f& velocity_ )
+{
+	velocity = velocity_;
+}
+
+void Ball::draw( sf::RenderWindow& window)
+{
+	sprite.setTexture( texture );
+	window.draw( sprite );
 }

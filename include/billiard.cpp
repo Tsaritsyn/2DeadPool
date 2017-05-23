@@ -56,8 +56,11 @@ void Billiard::setRotation( const sf::Vector2f& mousePosition_ )
 	sprite.setRotation( 142 + atan2f( direction.y, direction.x ) * 180 / PI );
 }
 
-void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite )
+sf::Vector2f Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite, const sf::Vector2f& cue_ball )
 {
+	// specify the position of the hit
+	position = cue_ball;
+
 	// hit power
 	float power = 0.0;
 	sf::Vector2f mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
@@ -89,19 +92,21 @@ void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite 
         setRotation( mouse_position );
         sprite.setPosition( position - getNorm( direction ) * power * (float)2 );
 
-        // test ball
-        sf::CircleShape ball_shape( 15 );
-        ball_shape.setFillColor( sf::Color( 255, 255, 255 ) );
-        ball_shape.setPosition ( position.x - 15, position.y - 15 );
-
         // displaying everything
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         window.draw( table_sprite );
-        window.draw( ball_shape );
         window.draw( sprite );
         window.draw( powerBar );
         window.draw( powerBar_color );
         window.display();
 	}
 	sprite.setPosition( position );
+
+	return getNorm( direction ) * power;
+}
+
+void Billiard::draw( sf::RenderWindow& window )
+{
+	setRotation( sf::Vector2f( sf::Mouse::getPosition( window ) ) );
+	window.draw( sprite );
 }
