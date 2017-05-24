@@ -11,6 +11,7 @@ class Billiard
 	sf::Sprite sprite;
 
 public:
+	Billiard();
 	Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction_, const std::string& filename );
 	~Billiard();
 
@@ -21,7 +22,7 @@ public:
 	void setDirection( const sf::Vector2f& direction_ );
 	void setRotation( const sf::Vector2f& mousePosition_ );
 
-	sf::Vector2f setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite, const sf::Vector2f& cue_ball );
+	sf::Vector2f setHit( sf::RenderWindow* window, const sf::Vector2f& cue_ball, float ball_radius );
 
-	void draw( sf::RenderWindow& window );
+	void draw( sf::RenderWindow& window, float ball_radius );
 };

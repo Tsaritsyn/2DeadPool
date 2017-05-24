@@ -22,7 +22,6 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	texture.loadFromFile( table_file );
 	sf::Vector2f texture_size( texture.getSize() );
 	sf::Vector2f scale( width / texture_size.x, height / texture_size.y );
-	std::cout << scale.x << ' ' << scale.y << std::endl;
 
 	// pockets' radii setup
 	corner_radius = 90 * height / 1775 * scale.y;
@@ -115,9 +114,9 @@ unsigned int Table::getHeight() const
 	return height;
 }
 
-sf::Sprite Table::getSprite() const
+const Ball* Table::getBalls() const
 {
-	return sprite;
+	return balls;
 }
 
 void Table::draw( sf::RenderWindow& window )

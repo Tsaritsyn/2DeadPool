@@ -31,6 +31,7 @@ public:
 	sf::Vector2f getPosition() const;		// returns the position
 	unsigned int getWidth() const;			// returns width
 	unsigned int getHeight() const;			// returns height
-	sf::Sprite getSprite() const;
+	const Ball* getBalls() const;			// returns the balls
+
 	void draw( sf::RenderWindow& window );	// draws the table
 };

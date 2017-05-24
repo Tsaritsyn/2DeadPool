@@ -3,6 +3,7 @@
 #include "billiard.hpp"
 #include <cmath>
 #include <iostream>
+#include <thread>
 
 #define BALL_RADIUS 15
 #define CUE_BALL 15
@@ -20,6 +21,12 @@ int main(int argc, char const *argv[])
     const std::string ball_file = "../bin/BilliardBalls.png";
     Table table( screen_center, sf::VideoMode::getDesktopMode(), table_file, ball_file );
 
+    // billiard
+    sf::Vector2f billiard_direction( 1, 0 );
+    const std::string billiard_file = "../bin/Billiard1.png";
+    Billiard billiard( table.getBalls()[CUE_BALL].getPosition(), billiard_direction,
+        billiard_file );
+
     // run the program as long as the window is open
     while ( window.isOpen() )
     {
@@ -32,8 +39,17 @@ int main(int argc, char const *argv[])
                 window.close();
         }
 
+        if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
+        {
+            Billiard* ptr = new Billiard();
+            std::thread thread_hit( &Billiard::setHit, &billiard, &window, table.getBalls()[CUE_BALL].getPosition(),
+                table.getBalls()[CUE_BALL].getRadius() );
+            thread_hit.join();
+        }
+
         window.clear( sf::Color( 0, 100, 0, 0 ) );
-        table.draw( window ); 
+        table.draw( window );
+        billiard.draw( window, table.getBalls()[CUE_BALL].getRadius() );
         window.display();
     }
 
