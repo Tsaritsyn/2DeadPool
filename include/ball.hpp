@@ -21,6 +21,11 @@ class Ball
 	sf::Sprite sprite;
 	int style;
 
+	// moves the ball as if 'time' time units went by
+	int update( float time, const Table& table );
+
+	void draw( sf::RenderWindow &window ); 				// draws the ball
+
 	friend class Table;
 
 public:
@@ -29,13 +34,10 @@ public:
 		const std::string& name, int style_ );
 	~Ball();
 
-	int update( float time, const Table& table );		// moves the ball as if 'time' time units went by
 	sf::Vector2f getPosition() const;					// returns the position
 	sf::Vector2f getVelocity() const;					// returns the velocity
 	int getRadius() const;								// returns the radius
+	int getStyle() const;								// returns the style
 
 	void setVelocity( const sf::Vector2f& velocity_ ); 	// sets the velocity
-
-	// graphical functions go here
-	void draw( sf::RenderWindow &window ); 				// draws the ball
 };

@@ -34,8 +34,9 @@ public:
 		const std::string& table_file, const std::string& ball_file );
 	~Table();
 
-	void update( float time ); 			// calculates the positions and the velocities of the balls
-	int balls_stopped() const;  // stop_flag == 1 when all balls' velocities are null
+	int update( float time ); 			// calculates the positions and the velocities of the balls
+	int balls_stopped() const;  		// stop_flag == 1 when all balls' velocities are null
+	//void setHit( sf::RenderWindow& window, Billiard& billiard );
 
 	sf::Vector2f getPosition() const;			// returns the position
 	unsigned int getWidth() const;				// returns width

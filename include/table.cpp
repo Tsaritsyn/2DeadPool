@@ -1,6 +1,7 @@
 #include "table.hpp"
 #include "ball.hpp"
 #include "vector_operations.hpp"
+#include "billiard.hpp"
 #include <new>
 #include <iostream>
 #include <cmath>
@@ -90,8 +91,9 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 
 Table::~Table()	{}
 
-void Table::update( float time )
+int Table::update( float time )
 {
+	int result = -1;
     sf::Vector2f rel_distance( 0, 0 );
     sf::Vector2f vel_difference( 0, 0 );
     sf::Vector2f delta_velocity( 0, 0 );
@@ -115,8 +117,13 @@ void Table::update( float time )
 
         got_in_pocket = balls[i].update( 1.0f, *this );
         if ( got_in_pocket == 0 )
+        {
+        	result = balls[i].style;
             balls.erase( balls.begin() + i );
-    }	
+        }
+    }
+
+    return result;
 }
 
 int Table::balls_stopped() const
@@ -129,6 +136,11 @@ int Table::balls_stopped() const
 
 	return stop_flag;
 }
+
+/*void Table::setHit( sf::RenderWindow& window, Billiard& billiard )
+{
+	if ( balls[balls.get])
+}*/
 
 sf::Vector2f Table::getPosition() const
 {

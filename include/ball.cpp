@@ -172,6 +172,11 @@ int Ball::getRadius() const
 	return radius;
 }
 
+int Ball::getStyle() const
+{
+	return style;
+}
+
 void Ball::setVelocity( const sf::Vector2f& velocity_ )
 {
 	velocity = velocity_;

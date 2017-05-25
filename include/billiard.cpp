@@ -55,6 +55,7 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 {
 	// hit power
 	float power = 0.0;
+	position = table.getBalls()[table.getBalls().size() - 1].getPosition();
 	sf::Vector2f mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
 	float initial_power = getLength( mouse_position - position );			// zero hit power level
 
@@ -63,8 +64,6 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 	powerBar.setPosition( sf::Vector2f( window.getSize().x * .925, window.getSize().y * .5 ) );
 	sf::RectangleShape powerBar_color;
 	powerBar_color.setFillColor( sf::Color( 255, 0, 0 ) );
-
-	position = table.getBalls()[CUE_BALL].getPosition();
 
 	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
 	{
@@ -84,7 +83,8 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
         // billiard texture displacement
         mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
         setRotation( mouse_position );
-        sprite.setPosition( position - getNorm( direction ) * ( power * PULL_BACK + table.getBalls()[CUE_BALL].getRadius() ) );
+        sprite.setPosition( position - getNorm( direction )
+       		* ( power * PULL_BACK + table.getBalls()[table.getBalls().size() - 1].getRadius() ) );
 
         // displaying everything
         window.clear( sf::Color( 0, 100, 0, 0 ) );

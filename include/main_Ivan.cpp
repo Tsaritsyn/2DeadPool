@@ -21,8 +21,8 @@ int main(int argc, char const *argv[])
 
     // billiard
     sf::Vector2f billiard_direction( 1, 0 );
-    const std::string billiard_file = "../bin/Billiard1.png";
-    Billiard billiard( table.getBalls()[CUE_BALL].getPosition(), billiard_direction,
+    const std::string billiard_file = "../bin/Billiard.png";
+    Billiard billiard( table.getBalls()[table.getBalls().size()].getPosition(), billiard_direction,
         billiard_file );
 
     sf::Vector2f hit_velocity( 0, 0 );
@@ -42,9 +42,9 @@ int main(int argc, char const *argv[])
         // hit setup
         if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( table.balls_stopped() == 1 ) )
         {
-            billiard.setPosition( table.getBalls()[].getPosition() );
+            billiard.setPosition( table.getBalls()[table.getBalls().size() - 1].getPosition() );
             hit_velocity = billiard.setHit( window, table );
-            table.getBalls()[CUE_BALL].setVelocity( hit_velocity );
+            table.getBalls()[table.getBalls().size() - 1].setVelocity( hit_velocity );
         }
 
         table.update( 1.0f );
