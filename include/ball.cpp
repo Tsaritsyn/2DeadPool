@@ -3,15 +3,63 @@
 #include <iostream>
 #include <cmath>
 
-#define MIN_SPEED .1
-#define REFLECTION .7
-#define FRICTION .018
+Ball::Ball(  )
+{
+	position = velocity = sf::Vector2f( 0.0, 0.0 );
+	style = 0;
+}
 
-Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, int radius_ )
+Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, float radius_,
+	const std::string& name, int style_ )
 {
 	position = position_;
 	velocity = velocity_;
 	radius = radius_;
+	style = style_;
+
+	sf::Image image;
+	sf::Vector2i text_size(188, 188);
+	int y = 0;
+	switch ( style / 4 )
+	{
+	case 1:
+		y = 265;
+		break;
+	case 2:
+		y = 550;
+		break;
+	case 3:
+		y = 835;
+		break;
+	default:
+		break;
+	}
+	int x = 0;
+	switch ( style % 4 )
+	{
+	case 1:
+		x = 215;
+		break;
+	case 2:
+		x = 425;
+		break;
+	case 3:
+		x = 640;
+		break;
+	default:
+		break;
+	}
+	// magic and you get image and rect - input params for loadFromImage
+	sf::Vector2i text_pos(x, y);
+	sf::IntRect rect(text_pos.x, text_pos.y, text_size.x, text_size.y);
+	image.loadFromFile(name);
+	image.createMaskFromColor(sf::Color::White);
+
+	texture.loadFromImage(image, rect);
+	sprite.setTexture( texture );
+	sf::Vector2f scale( 2 * radius / texture.getSize().x, 2 * radius / texture.getSize().y );
+	sprite.setScale( scale );
+	sprite.setPosition( position - sf::Vector2f( radius, radius ) );
 }
 
 Ball::~Ball() {}
@@ -29,8 +77,8 @@ int Ball::update( float time, const Table& table )
 	// moving the ball as if there were no borders
 	if ( speed > MIN_SPEED )
 	{
-		sf::Vector2f acceleration = -velocity / speed * (float)FRICTION;
-		position += velocity * time + acceleration * time * time / (float)2;
+		sf::Vector2f acceleration = -velocity / speed * FRICTION;
+		position += velocity * time + acceleration * time * time / 2.0f;
 		velocity += acceleration * time;
 	}
 	else
@@ -40,10 +88,24 @@ int Ball::update( float time, const Table& table )
 	}
 
 	// checks if the ball is inside of a pocket
-	if ( getInterval( position, table.pockets[0] ) < table.corner_radius )
+	for (int i = 0; i < table.pockets.size(); ++i)
 	{
-		velocity.x = velocity.y = 0.0;
-		return 0;
+		if ( ( i == 1 ) || ( i == 4 ) )
+		{
+			if ( getInterval( position, table.pockets[i] ) < table.middle_radius )
+			{
+				velocity.x = velocity.y = 0.0;
+				return 0;
+			}
+		}
+		if ( ( i != 1 ) && ( i != 4 ) )
+		{
+			if ( getInterval( position, table.pockets[i] ) < table.corner_radius )
+			{
+				velocity.x = velocity.y = 0.0;
+				return 0;
+			}	
+		}
 	}
 
 	// reflection from the pockets' corners
@@ -55,7 +117,7 @@ int Ball::update( float time, const Table& table )
 			float normal_length = getLength( normal );
 			normal /= normal_length;
 			normal_velocity = normal * getScalar( velocity, normal );
-			velocity -= normal_velocity * ( (float)1 + (float)REFLECTION );
+			velocity -= normal_velocity * ( 1.0f + BORDER_REFLECTION );
 			position += velocity * time;
 			return 1;
 		}
@@ -68,12 +130,12 @@ int Ball::update( float time, const Table& table )
 		if ( position.y < table.borders[0].y + radius )
 		{
 			position.y = ( table.borders[0].y + radius ) * 2 - position.y;
-			velocity.y = -velocity.y * (float)REFLECTION;
+			velocity.y = -velocity.y * BORDER_REFLECTION;
 		}
 		if ( position.y > table.borders[6].y - radius )
 		{
 			position.y = ( table.borders[6].y - radius ) * 2 - position.y;
-			velocity.y = -velocity.y * (float)REFLECTION;
+			velocity.y = -velocity.y * BORDER_REFLECTION;
 		}
 	}
 
@@ -83,12 +145,12 @@ int Ball::update( float time, const Table& table )
 		if ( position.x > table.borders[5].x - radius )
 		{
 			position.x = ( table.borders[5].x - radius ) * 2 - position.x;
-			velocity.x = -velocity.x * (float)REFLECTION;
+			velocity.x = -velocity.x * BORDER_REFLECTION;
 		}
 		if ( position.x < table.borders[10].x + radius )
 		{
 			position.x = ( table.borders[10].x + radius ) * 2 - position.x;
-			velocity.x = -velocity.x * (float)REFLECTION;
+			velocity.x = -velocity.x * BORDER_REFLECTION;
 		}
 	}
 
@@ -108,4 +170,16 @@ sf::Vector2f Ball::getVelocity() const
 int Ball::getRadius() const
 {
 	return radius;
+}
+
+void Ball::setVelocity( const sf::Vector2f& velocity_ )
+{
+	velocity = velocity_;
+}
+
+void Ball::draw( sf::RenderWindow& window)
+{
+	sprite.setTexture( texture );
+	sprite.setPosition( position - sf::Vector2f( radius, radius ) );
+	window.draw( sprite );
 }

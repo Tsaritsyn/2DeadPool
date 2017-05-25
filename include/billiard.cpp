@@ -4,14 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#define HIT_DISTANCE 100
-#define SCALE .5
-#define PI 3.1415926
-#define MAX_POWER 50
-
-float getLength1( const sf::Vector2f& vector )
+Billiard::Billiard()
 {
-	return sqrt( vector.x * vector.x + vector.y * vector.y );
+	position = direction = sf::Vector2f( 0, 0 );
 }
 
 Billiard::Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction_, const std::string& filename )
@@ -22,7 +17,7 @@ Billiard::Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction
 	// graphical initialization
 	texture.loadFromFile( filename );
 	sf::Vector2f size( texture.getSize() );
-	sprite.setScale( sf::Vector2f( SCALE, SCALE ) );
+	sprite.setScale( sf::Vector2f( BILLIARD_SCALE, BILLIARD_SCALE ) );
 	sprite.setTexture( texture );
 	sprite.setPosition( position );
 	sprite.setRotation( 90 + atan2f( direction.x, direction.y ) * 180 / PI );
@@ -56,7 +51,7 @@ void Billiard::setRotation( const sf::Vector2f& mousePosition_ )
 	sprite.setRotation( 142 + atan2f( direction.y, direction.x ) * 180 / PI );
 }
 
-void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite )
+sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 {
 	// hit power
 	float power = 0.0;
@@ -68,6 +63,8 @@ void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite 
 	powerBar.setPosition( sf::Vector2f( window.getSize().x * .925, window.getSize().y * .5 ) );
 	sf::RectangleShape powerBar_color;
 	powerBar_color.setFillColor( sf::Color( 255, 0, 0 ) );
+
+	position = table.getBalls()[CUE_BALL].getPosition();
 
 	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
 	{
@@ -87,21 +84,25 @@ void Billiard::setHit( sf::RenderWindow& window, const sf::Sprite& table_sprite 
         // billiard texture displacement
         mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
         setRotation( mouse_position );
-        sprite.setPosition( position - getNorm( direction ) * power * (float)2 );
-
-        // test ball
-        sf::CircleShape ball_shape( 15 );
-        ball_shape.setFillColor( sf::Color( 255, 255, 255 ) );
-        ball_shape.setPosition ( position.x - 15, position.y - 15 );
+        sprite.setPosition( position - getNorm( direction ) * ( power * PULL_BACK + table.getBalls()[CUE_BALL].getRadius() ) );
 
         // displaying everything
         window.clear( sf::Color( 0, 100, 0, 0 ) );
-        window.draw( table_sprite );
-        window.draw( ball_shape );
+        table.draw( window );
+        //draw( window );
         window.draw( sprite );
         window.draw( powerBar );
         window.draw( powerBar_color );
         window.display();
 	}
 	sprite.setPosition( position );
+
+	return getNorm( direction ) * power;
+}
+
+void Billiard::draw( sf::RenderWindow& window, float ball_radius )
+{
+	setRotation( sf::Vector2f( sf::Mouse::getPosition( window ) ) );
+	sprite.setPosition( position - getNorm( direction ) * ball_radius );
+	window.draw( sprite );
 }
