@@ -1,17 +1,15 @@
 #include "ball.hpp"
 #include "table.hpp"
 #include "billiard.hpp"
+#include "vector_operations.hpp"
 #include <cmath>
 #include <iostream>
 #include <thread>
 
-#define BALL_RADIUS 15
-#define CUE_BALL 15
-
 int main(int argc, char const *argv[])
 {
     // window initialization
-    const sf::VideoMode video_mode = sf::VideoMode::getDesktopMode();
+    const sf::VideoMode video_mode = sf::VideoMode::getDesktopMode();    
     // create a fullscreen window
     sf::RenderWindow window( video_mode, "2DeadPool", sf::Style::Fullscreen );
 
@@ -27,6 +25,8 @@ int main(int argc, char const *argv[])
     Billiard billiard( table.getBalls()[CUE_BALL].getPosition(), billiard_direction,
         billiard_file );
 
+    sf::Vector2f hit_velocity( 0, 0 );
+
     // run the program as long as the window is open
     while ( window.isOpen() )
     {
@@ -39,17 +39,18 @@ int main(int argc, char const *argv[])
                 window.close();
         }
 
-        if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
+        // hit setup
+        if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( table.balls_stopped() == 1 ) )
         {
-            Billiard* ptr = new Billiard();
-            std::thread thread_hit( &Billiard::setHit, &billiard, &window, table.getBalls()[CUE_BALL].getPosition(),
-                table.getBalls()[CUE_BALL].getRadius() );
-            thread_hit.join();
+            billiard.setPosition( table.getBalls()[].getPosition() );
+            hit_velocity = billiard.setHit( window, table );
+            table.getBalls()[CUE_BALL].setVelocity( hit_velocity );
         }
+
+        table.update( 1.0f );
 
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         table.draw( window );
-        billiard.draw( window, table.getBalls()[CUE_BALL].getRadius() );
         window.display();
     }
 

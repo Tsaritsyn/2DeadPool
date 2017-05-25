@@ -1,14 +1,9 @@
 #include "table.hpp"
 #include "ball.hpp"
+#include "vector_operations.hpp"
 #include <new>
 #include <iostream>
 #include <cmath>
-
-#define BALL_COUNT 16
-#define TABLE_WIDTH .8
-#define TABLE_HEIGHT .8
-#define SCALE_X	1.16047
-#define SCALE_Y 1.22555
 
 Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	const std::string& table_file, const std::string& ball_file )
@@ -64,8 +59,7 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	}
 
 	// balls initialization
-	balls = new Ball[BALL_COUNT];
-	float ball_radius = 47 * height * scale.y / 1775;
+	float ball_radius = 44 * height * scale.y / 1775;
 	sf::Vector2f null_velocity( 0, 0 );
 	std::vector<sf::Vector2f> ball_positions( BALL_COUNT ); // relatively to the table's center
 	ball_positions[0] = sf::Vector2f( ball_radius * 2 * sqrt(3), -ball_radius * 2 );
@@ -85,8 +79,8 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	ball_positions[14] = sf::Vector2f( ball_radius * 2 * sqrt(3), ball_radius * 2 );
 	ball_positions[15] = sf::Vector2f( width * (-.5), 0 );
 	for (int i = 0; i < BALL_COUNT; ++i)
-		balls[i] = Ball( sf::Vector2f( ball_positions[i].x * scale.x / SCALE_X, ball_positions[i].y * scale.y / SCALE_Y )
-			+ position + sf::Vector2f( width / 4 * scale.x / SCALE_X, 0 ), null_velocity, ball_radius, ball_file, i );
+		balls.push_back( Ball( sf::Vector2f( ball_positions[i].x * scale.x / SCALE_X, ball_positions[i].y * scale.y / SCALE_Y )
+			+ position + sf::Vector2f( width / 4 * scale.x / SCALE_X, 0 ), null_velocity, ball_radius, ball_file, i ) );
 
 	// graphical initialization
 	sprite.setTexture( texture );
@@ -94,9 +88,46 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	sprite.setPosition( position - sf::Vector2f( width / 2, height / 2 ) );
 }
 
-Table::~Table()
+Table::~Table()	{}
+
+void Table::update( float time )
 {
-	delete[] balls;
+    sf::Vector2f rel_distance( 0, 0 );
+    sf::Vector2f vel_difference( 0, 0 );
+    sf::Vector2f delta_velocity( 0, 0 );
+    int got_in_pocket = 0;
+
+	// balls' positions update
+    for (int i = 0; i < balls.size(); ++i)
+    {
+        for (int j = i + 1; j < balls.size(); ++j)
+        {
+            rel_distance = balls[j].position - balls[i].position;
+            vel_difference = balls[j].velocity - balls[i].velocity;
+            if ( ( balls[i].radius + balls[j].radius
+                - getLength( rel_distance ) > 0.0 ) && ( getScalar( vel_difference, rel_distance ) < 0.0 ) )
+            {
+                delta_velocity = getNorm( rel_distance ) * getScalar( vel_difference, getNorm( rel_distance ) );
+                balls[i].velocity += delta_velocity * BALL_REFLECTION;
+                balls[j].velocity -= delta_velocity * BALL_REFLECTION;
+            }
+        }
+
+        got_in_pocket = balls[i].update( 1.0f, *this );
+        if ( got_in_pocket == 0 )
+            balls.erase( balls.begin() + i );
+    }	
+}
+
+int Table::balls_stopped() const
+{
+	int stop_flag = 1;
+	sf::Vector2f null_vector( 0, 0 );
+	for (int i = 0; i < balls.size(); ++i)
+		if ( balls[i].velocity != null_vector )
+			stop_flag = 0;
+
+	return stop_flag;
 }
 
 sf::Vector2f Table::getPosition() const
@@ -114,7 +145,7 @@ unsigned int Table::getHeight() const
 	return height;
 }
 
-const Ball* Table::getBalls() const
+std::vector<Ball>& Table::getBalls()
 {
 	return balls;
 }
@@ -122,6 +153,6 @@ const Ball* Table::getBalls() const
 void Table::draw( sf::RenderWindow& window )
 {
     window.draw( sprite );
-    for (int i = 0; i < BALL_COUNT; ++i)
+    for (int i = 0; i < balls.size(); ++i)
 		balls[i].draw( window );
 }

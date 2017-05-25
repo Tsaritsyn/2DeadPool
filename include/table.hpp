@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#define BALL_COUNT 16
+#define TABLE_WIDTH .8
+#define TABLE_HEIGHT .8
+#define SCALE_X	1.16047
+#define SCALE_Y 1.22555
+
 class Ball;
 
 class Table
@@ -14,7 +20,7 @@ class Table
 	std::vector <sf::Vector2f> pockets, borders;
 
 	// the balls of the game
-	Ball* balls;
+	std::vector<Ball> balls;
 
 	// graphical properties
 	sf::Texture texture;
@@ -28,10 +34,13 @@ public:
 		const std::string& table_file, const std::string& ball_file );
 	~Table();
 
-	sf::Vector2f getPosition() const;		// returns the position
-	unsigned int getWidth() const;			// returns width
-	unsigned int getHeight() const;			// returns height
-	const Ball* getBalls() const;			// returns the balls
+	void update( float time ); 			// calculates the positions and the velocities of the balls
+	int balls_stopped() const;  // stop_flag == 1 when all balls' velocities are null
 
-	void draw( sf::RenderWindow& window );	// draws the table
+	sf::Vector2f getPosition() const;			// returns the position
+	unsigned int getWidth() const;				// returns width
+	unsigned int getHeight() const;				// returns height
+	std::vector<Ball>& getBalls();				// returns the balls
+
+	void draw( sf::RenderWindow& window );		// draws the table
 };

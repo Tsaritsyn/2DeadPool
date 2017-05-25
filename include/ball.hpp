@@ -2,6 +2,11 @@
 #include "table.hpp"
 #include <SFML/Graphics.hpp>
 
+#define MIN_SPEED 1e-2f
+#define FRICTION 4e-4f
+#define BORDER_REFLECTION .7f
+#define BALL_REFLECTION .8f
+
 class Ball
 {
 	// movement properties
@@ -15,6 +20,8 @@ class Ball
 	sf::Texture texture;		// the texture (picture) of the ball
 	sf::Sprite sprite;
 	int style;
+
+	friend class Table;
 
 public:
 	Ball();		// position = velocity = ( 0, 0 ), radius = 1

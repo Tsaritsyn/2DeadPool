@@ -2,6 +2,12 @@
 #include "ball.hpp"
 #include <SFML/Graphics.hpp>
 
+#define BILLIARD_SCALE .5f
+#define PI 3.1415926f
+#define MAX_POWER 7
+#define PULL_BACK 10.0f
+#define CUE_BALL 15
+
 class Billiard
 {
 	sf::Vector2f position; 		// specifies the position of the ball to hit
@@ -22,7 +28,7 @@ public:
 	void setDirection( const sf::Vector2f& direction_ );
 	void setRotation( const sf::Vector2f& mousePosition_ );
 
-	sf::Vector2f setHit( sf::RenderWindow* window, const sf::Vector2f& cue_ball, float ball_radius );
+	sf::Vector2f setHit( sf::RenderWindow& window, Table& table );
 
 	void draw( sf::RenderWindow& window, float ball_radius );
 };

@@ -3,14 +3,9 @@
 #include <iostream>
 #include <cmath>
 
-#define MIN_SPEED .1
-#define REFLECTION .7
-#define FRICTION .018
-
 Ball::Ball(  )
 {
 	position = velocity = sf::Vector2f( 0.0, 0.0 );
-	radius = 1;
 	style = 0;
 }
 
@@ -61,6 +56,7 @@ Ball::Ball( const sf::Vector2f& position_, const sf::Vector2f& velocity_, float 
 	image.createMaskFromColor(sf::Color::White);
 
 	texture.loadFromImage(image, rect);
+	sprite.setTexture( texture );
 	sf::Vector2f scale( 2 * radius / texture.getSize().x, 2 * radius / texture.getSize().y );
 	sprite.setScale( scale );
 	sprite.setPosition( position - sf::Vector2f( radius, radius ) );
@@ -81,8 +77,8 @@ int Ball::update( float time, const Table& table )
 	// moving the ball as if there were no borders
 	if ( speed > MIN_SPEED )
 	{
-		sf::Vector2f acceleration = -velocity / speed * (float)FRICTION;
-		position += velocity * time + acceleration * time * time / (float)2;
+		sf::Vector2f acceleration = -velocity / speed * FRICTION;
+		position += velocity * time + acceleration * time * time / 2.0f;
 		velocity += acceleration * time;
 	}
 	else
@@ -121,7 +117,7 @@ int Ball::update( float time, const Table& table )
 			float normal_length = getLength( normal );
 			normal /= normal_length;
 			normal_velocity = normal * getScalar( velocity, normal );
-			velocity -= normal_velocity * ( (float)1 + (float)REFLECTION );
+			velocity -= normal_velocity * ( 1.0f + BORDER_REFLECTION );
 			position += velocity * time;
 			return 1;
 		}
@@ -134,12 +130,12 @@ int Ball::update( float time, const Table& table )
 		if ( position.y < table.borders[0].y + radius )
 		{
 			position.y = ( table.borders[0].y + radius ) * 2 - position.y;
-			velocity.y = -velocity.y * (float)REFLECTION;
+			velocity.y = -velocity.y * BORDER_REFLECTION;
 		}
 		if ( position.y > table.borders[6].y - radius )
 		{
 			position.y = ( table.borders[6].y - radius ) * 2 - position.y;
-			velocity.y = -velocity.y * (float)REFLECTION;
+			velocity.y = -velocity.y * BORDER_REFLECTION;
 		}
 	}
 
@@ -149,12 +145,12 @@ int Ball::update( float time, const Table& table )
 		if ( position.x > table.borders[5].x - radius )
 		{
 			position.x = ( table.borders[5].x - radius ) * 2 - position.x;
-			velocity.x = -velocity.x * (float)REFLECTION;
+			velocity.x = -velocity.x * BORDER_REFLECTION;
 		}
 		if ( position.x < table.borders[10].x + radius )
 		{
 			position.x = ( table.borders[10].x + radius ) * 2 - position.x;
-			velocity.x = -velocity.x * (float)REFLECTION;
+			velocity.x = -velocity.x * BORDER_REFLECTION;
 		}
 	}
 
@@ -184,5 +180,6 @@ void Ball::setVelocity( const sf::Vector2f& velocity_ )
 void Ball::draw( sf::RenderWindow& window)
 {
 	sprite.setTexture( texture );
+	sprite.setPosition( position - sf::Vector2f( radius, radius ) );
 	window.draw( sprite );
 }
