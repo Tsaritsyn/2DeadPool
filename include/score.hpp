@@ -2,22 +2,38 @@
 #include <SFML/Graphics.hpp>
 #include "ball.hpp"
 
+#define MINOR_FONT_SIZE 25
+#define MAJOR_FONT_SIZE 45
+#define BALL7 7
+#define BALL8 8
+
+struct Player
+{
+	int score;
+	int ball_type;	// ==0 if this player's balls are solid, ==1 if striped
+	sf::Text text; 	// used for displaying this player's name
+};
+
 class Score
 {
 	// the scores of the players
-	int score1, score2;
+	std::vector<Player> players;
 
 	// scores' positions
 	sf::Vector2f left_score, right_score;
 
-	/* player names variables*/
+	// sets the font for the name displaying
+	sf::Font font;
 
 	// puts the balls got into a pocket to the appropriate score
-	void add_ball( Ball& ball, int player_number );
+	void add_ball( Ball& ball );
 
 	friend class Table;
 
 public:
-	Score( const sf::Vector2f& left_score_, const sf::Vector2f& right_score_ );
+	Score( const sf::VideoMode& video_mode,	const std::string& player_name1,
+		const std::string& player_name2, const std::string& font_file );
 	~Score();
+
+	void draw( sf::RenderWindow& window );
 };

@@ -1,24 +1,49 @@
 #include "score.hpp"
 
-Score::Score( const sf::Vector2f& left_score_, const sf::Vector2f& right_score_ )
+Score::Score( const sf::VideoMode& video_mode,	const std::string& player_name1,
+		const std::string& player_name2, const std::string& font_file )
 {
-	score1 = score2 = 0;
-	left_score = left_score_;
-	right_score = right_score_;
+	// load the font from file
+	font.loadFromFile( font_file );
+
+	// players initialization
+	Player temp_player;
+	temp_player.score = 0;
+	temp_player.ball_type = 0;
+	temp_player.text = sf::Text( player_name1, font );
+	temp_player.text.setCharacterSize( MAJOR_FONT_SIZE );
+	temp_player.text.setPosition( sf::Vector2f( video_mode.width / 8, video_mode.height / 15 ) );
+	players.push_back( temp_player );
+	temp_player.text = sf::Text( player_name2, font );
+	temp_player.text.setColor( sf::Color::Black );
+	temp_player.text.setCharacterSize( MINOR_FONT_SIZE );
+	temp_player.text.setPosition( sf::Vector2f( video_mode.width * 2 / 3, video_mode.height / 15 ) );
+	players.push_back( temp_player );
+
+	// score position initialization
+	left_score = sf::Vector2f( video_mode.width / 20, video_mode.height / 10 );
+    right_score = sf::Vector2f( video_mode.width * 19 / 20, video_mode.height / 10 );
 }
 
 Score::~Score() {}
 
-void Score::add_ball( Ball& ball, int player_number )
+void Score::add_ball( Ball& ball )
 {
-	if ( player_number == 1 )
+	int where_to_put = ( ball.style <= BALL7 ) ^ ( players[0].ball_type == 0 );
+	if ( where_to_put == 0)
 	{
-		ball.position = left_score + sf::Vector2f( 0, ball.radius * 2.5f * score1 );
-		score1++;
+		ball.position = left_score + sf::Vector2f( 0, ball.radius * 2.5f * players[0].score );
+		players[0].score++;
 	}
 	else
 	{
-		ball.position = right_score + sf::Vector2f( 0, ball.radius * 2.5f * score2 );
-		score2++;
+		ball.position = right_score + sf::Vector2f( 0, ball.radius * 2.5f * players[1].score );
+		players[1].score++;
 	}
+}
+
+void Score::draw( sf::RenderWindow& window )
+{
+	window.draw( players[0].text );
+	window.draw( players[1].text );
 }

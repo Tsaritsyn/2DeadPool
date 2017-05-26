@@ -3,7 +3,7 @@
 #include "table.hpp"
 
 #define MIN_SPEED 1e-2f
-#define FRICTION 24e-5f
+#define FRICTION 26e-5f
 #define BORDER_REFLECTION .6f
 #define BALL_REFLECTION .8f
 

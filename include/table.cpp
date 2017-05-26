@@ -95,11 +95,12 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 
 Table::~Table()	{}
 
-void Table::update( float time, Score& score, int& player_number )
+int Table::update( float time, Score& score, int& player_number )
 {
     sf::Vector2f rel_distance( 0, 0 );
     sf::Vector2f vel_difference( 0, 0 );
     sf::Vector2f delta_velocity( 0, 0 );
+    bool zero_score = ( score.players[0].score == 0 ) && ( score.players[1].score == 0 );
 
 	// balls' positions update
     for (int i = 0; i < balls.size(); ++i)
@@ -119,12 +120,24 @@ void Table::update( float time, Score& score, int& player_number )
 
         if ( balls[i].update( time, *this ) == 0 )
         {
+        	if ( zero_score )
+        	{
+        		zero_score = false;
+        		if ( i <= BALL7 )
+        			score.players[1 - player_number].ball_type = 1;
+        		else if ( ( i == BALL8 ) && ( score.players[player_number].score <= BALL7 ) )
+        				return GAME_LOST;
+        			else
+        				score.players[player_number].ball_type = 1;
+        	}
         	if ( balls[i].style == CUE_BALL )
         		balls[i].position = sf::Vector2f( -1, -1 ) * balls[i].radius;
         	else
-       			score.add_ball( balls[i], player_number);
+       			score.add_ball( balls[i] );
         }
     }
+
+    return 0;
 }
 
 int Table::balls_stopped() const
