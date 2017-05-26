@@ -142,10 +142,6 @@ void Table::setHit( sf::RenderWindow& window )
 {
     sf::Vector2f hit_velocity( 0, 0 );
 
-	/*sf::Vector2f null_vector( 0, 0 );
-	if ( balls[balls.size() - 1].style != CUE_STYLE )
-		balls.push_back( position + sf::Vector2f( width / 4, height / 2 ),
-			null_vector, balls[balls.size() - 1].radius, , CUE_STYLE );*/
 	// hit setup
     if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( this->balls_stopped() == 1 ) )
     {
@@ -153,26 +149,6 @@ void Table::setHit( sf::RenderWindow& window )
         hit_velocity = billiard[0].setHit( window, *this );
         balls[balls.size() - 1].velocity = hit_velocity;
     }
-}
-
-sf::Vector2f Table::getPosition() const
-{
-	return position;
-}
-
-unsigned int Table::getWidth() const
-{
-	return width;
-}
-
-unsigned int Table::getHeight() const
-{
-	return height;
-}
-
-std::vector<Ball>& Table::getBalls()
-{
-	return balls;
 }
 
 void Table::draw( sf::RenderWindow& window )

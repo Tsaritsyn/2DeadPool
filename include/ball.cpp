@@ -157,31 +157,6 @@ int Ball::update( float time, const Table& table )
 	return 1;
 }
 
-sf::Vector2f Ball::getPosition() const
-{
-	return position;
-}
-
-sf::Vector2f Ball::getVelocity() const
-{
-	return velocity;
-}
-
-int Ball::getRadius() const
-{
-	return radius;
-}
-
-int Ball::getStyle() const
-{
-	return style;
-}
-
-void Ball::setVelocity( const sf::Vector2f& velocity_ )
-{
-	velocity = velocity_;
-}
-
 void Ball::draw( sf::RenderWindow& window)
 {
 	sprite.setTexture( texture );

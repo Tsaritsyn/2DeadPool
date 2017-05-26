@@ -32,6 +32,9 @@ class Table
 	sf::Sprite sprite;
 
 	friend class Ball;
+	friend class Billiard;
+
+	int balls_stopped() const;  		// stop_flag == 1 when all balls' velocities are null
 
 public:
 	// position_ is the center of the table, width and height are the dimensions in pixels, name picture filename
@@ -39,14 +42,7 @@ public:
 		const std::string& table_file, const std::string& ball_file, const std::string& billiard_file );
 	~Table();
 
-	int update( float time ); 			// calculates the positions and the velocities of the balls
-	int balls_stopped() const;  		// stop_flag == 1 when all balls' velocities are null
-	void setHit( sf::RenderWindow& window );
-
-	sf::Vector2f getPosition() const;			// returns the position
-	unsigned int getWidth() const;				// returns width
-	unsigned int getHeight() const;				// returns height
-	std::vector<Ball>& getBalls();				// returns the balls
-
+	int update( float time ); 					// calculates the positions and the velocities of the balls
+	void setHit( sf::RenderWindow& window ); 	// ball to hit and the hit setup
 	void draw( sf::RenderWindow& window );		// draws the table
 };

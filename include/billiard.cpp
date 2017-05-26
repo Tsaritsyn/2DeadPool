@@ -50,7 +50,7 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 {
 	// hit power
 	float power = 0.0;
-	position = table.getBalls()[table.getBalls().size() - 1].getPosition();
+	position = table.balls[table.balls.size() - 1].position;
 	sf::Vector2f mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
 	float initial_power = getLength( mouse_position - position );			// zero hit power level
 
@@ -79,7 +79,7 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
         mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
         setRotation( mouse_position );
         sprite.setPosition( position - getNorm( direction )
-       		* ( power * PULL_BACK + table.getBalls()[table.getBalls().size() - 1].getRadius() ) );
+       		* ( power * PULL_BACK + table.balls[table.balls.size() - 1].radius ) );
         sprite.setTexture( texture );
 
         // displaying everything
