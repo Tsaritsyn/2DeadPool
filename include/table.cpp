@@ -82,6 +82,10 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 		balls.push_back( Ball( sf::Vector2f( ball_positions[i].x * scale.x / SCALE_X, ball_positions[i].y * scale.y / SCALE_Y )
 			+ position + sf::Vector2f( width / 4 * scale.x / SCALE_X, 0 ), null_velocity, ball_radius, ball_file, i ) );
 
+	//columns of the hitted balls initialization
+	left_outer = sf::Vector2f(width * 0.05f - ball_radius, position.y - height / 2 - ball_radius);
+	right_outer = sf::Vector2f(width * 0.95f - ball_radius, position.y - height / 2 - ball_radius);
+	
 	// graphical initialization
 	sprite.setTexture( texture );
 	sprite.setScale( scale );
@@ -156,4 +160,34 @@ void Table::draw( sf::RenderWindow& window )
     window.draw( sprite );
     for (int i = 0; i < balls.size(); ++i)
 		balls[i].draw( window );
+}
+
+void Table::remove(Ball ball, int player_num)
+{
+	if (ball.style == 15)
+	{
+		sf::Vector2f cue_position = sf::Vector2f(width * 0.25f, height * 0.5f) + position;
+		bool shift = false;
+		for (unsigned int i = 0; i < balls.size(); i++)
+		{
+			if (getInterval(cue_position, balls[i].position) < ball.radius) shift = true;
+		}
+		if (shift) cue_position.x += ball.radius;
+		ball.position = cue_position;
+	}
+	else
+	{
+		if (player_num == 1)
+		{
+			ball.position = right_outer;
+			right_outer.x += ball.radius;
+		}
+		else if (player_num == 0)
+		{
+			ball.position = left_outer;
+			left_outer.x += ball.radius;
+		}
+	}
+	
+	ball.velocity = sf::Vector2f(0.0f, 0.0f);
 }

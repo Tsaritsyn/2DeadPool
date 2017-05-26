@@ -20,6 +20,8 @@ class Table
 
 	// special origin points for balls, borders, pockets 
 	std::vector <sf::Vector2f> pockets, borders;
+	
+	sf::Vector2f right_outer, left_outer;
 
 	// the balls of the game
 	std::vector<Ball> balls;
@@ -45,4 +47,5 @@ public:
 	int update( float time ); 					// calculates the positions and the velocities of the balls
 	void setHit( sf::RenderWindow& window ); 	// ball to hit and the hit setup
 	void draw( sf::RenderWindow& window );		// draws the table
+	void remove(Ball ball, int player_num);		// puts ball hitted into a pocket to left or right of the table
 };
