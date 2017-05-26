@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 
 #define MIN_SPEED 1e-2f
-#define FRICTION 4e-4f
-#define BORDER_REFLECTION .7f
-#define BALL_REFLECTION .8f
+#define FRICTION 35e-5f
+#define BORDER_REFLECTION .6f
+#define BALL_REFLECTION .83f
 
 class Ball
 {

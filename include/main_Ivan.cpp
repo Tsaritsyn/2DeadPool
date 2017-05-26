@@ -6,6 +6,8 @@
 #include <iostream>
 #include <thread>
 
+#define TIME_CONSTANT 2e3
+
 int main(int argc, char const *argv[])
 {
     // window initialization
@@ -27,6 +29,12 @@ int main(int argc, char const *argv[])
 
     sf::Vector2f hit_velocity( 0, 0 );
 
+    // clock for the independence from CPU speed
+    sf::Clock clock;
+    sf::Time time = clock.getElapsedTime();
+    int previous_time = time.asMicroseconds();
+    int dt = 0.0;
+
     // run the program as long as the window is open
     while ( window.isOpen() )
     {
@@ -47,8 +55,13 @@ int main(int argc, char const *argv[])
             table.getBalls()[table.getBalls().size() - 1].setVelocity( hit_velocity );
         }
 
-        table.update( 1.0f );
+        // table update
+        time = clock.getElapsedTime();
+        dt = time.asMicroseconds() - previous_time;
+        previous_time = time.asMicroseconds();
+        table.update( dt / TIME_CONSTANT );
 
+        // table display
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         table.draw( window );
         window.display();
