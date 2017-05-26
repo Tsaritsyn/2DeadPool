@@ -1,13 +1,12 @@
 #pragma once
-#include "ball.hpp"
 #include <SFML/Graphics.hpp>
+#include "ball.hpp"
 
 #define BILLIARD_SCALE .5f
 #define PI 3.1415926f
-#define MAX_POWER 5
+#define MAX_POWER 6
+#define MIN_POWER .1f
 #define PULL_BACK 15.0f
-
-class Table;
 
 class Billiard
 {
