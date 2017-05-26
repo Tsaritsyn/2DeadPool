@@ -40,11 +40,6 @@ void Billiard::setPosition( const sf::Vector2f& position_ )
 	position = position_;
 }
 
-void Billiard::setDirection( const sf::Vector2f& direction_ )
-{
-	direction = direction_;
-}
-
 void Billiard::setRotation( const sf::Vector2f& mousePosition_ )
 {
 	direction = position - mousePosition_;
@@ -85,11 +80,11 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
         setRotation( mouse_position );
         sprite.setPosition( position - getNorm( direction )
        		* ( power * PULL_BACK + table.getBalls()[table.getBalls().size() - 1].getRadius() ) );
+        sprite.setTexture( texture );
 
         // displaying everything
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         table.draw( window );
-        //draw( window );
         window.draw( sprite );
         window.draw( powerBar );
         window.draw( powerBar_color );

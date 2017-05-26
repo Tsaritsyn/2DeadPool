@@ -18,16 +18,9 @@ int main(int argc, char const *argv[])
     // initialize a table
     sf::Vector2f screen_center( video_mode.width / 2, video_mode.height / 2 );
     const std::string table_file = "../bin/Table.png";
-    const std::string ball_file = "../bin/BilliardBalls.png";
-    Table table( screen_center, sf::VideoMode::getDesktopMode(), table_file, ball_file );
-
-    // billiard
-    sf::Vector2f billiard_direction( 1, 0 );
+    const std::string ball_file = "../bin/Balls.png";
     const std::string billiard_file = "../bin/Billiard.png";
-    Billiard billiard( table.getBalls()[table.getBalls().size()].getPosition(), billiard_direction,
-        billiard_file );
-
-    sf::Vector2f hit_velocity( 0, 0 );
+    Table table( screen_center, sf::VideoMode::getDesktopMode(), table_file, ball_file, billiard_file );
 
     // clock for the independence from CPU speed
     sf::Clock clock;
@@ -47,13 +40,8 @@ int main(int argc, char const *argv[])
                 window.close();
         }
 
-        // hit setup
-        if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( table.balls_stopped() == 1 ) )
-        {
-            billiard.setPosition( table.getBalls()[table.getBalls().size() - 1].getPosition() );
-            hit_velocity = billiard.setHit( window, table );
-            table.getBalls()[table.getBalls().size() - 1].setVelocity( hit_velocity );
-        }
+        // set hit
+        table.setHit( window );
 
         // table update
         time = clock.getElapsedTime();

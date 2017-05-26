@@ -1,13 +1,12 @@
 #include "table.hpp"
 #include "ball.hpp"
-#include "vector_operations.hpp"
 #include "billiard.hpp"
-#include <new>
+#include "vector_operations.hpp"
 #include <iostream>
 #include <cmath>
 
 Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
-	const std::string& table_file, const std::string& ball_file )
+	const std::string& table_file, const std::string& ball_file, const std::string& billiard_file )
 {
 	// general initialization
 	position = position_;
@@ -87,6 +86,10 @@ Table::Table( const sf::Vector2f& position_, const sf::VideoMode& video_mode,
 	sprite.setTexture( texture );
 	sprite.setScale( scale );
 	sprite.setPosition( position - sf::Vector2f( width / 2, height / 2 ) );
+
+	//billiard setup
+	sf::Vector2f null_vector( 0, 0 );
+	billiard.push_back( Billiard( null_vector, null_vector, billiard_file ) );
 }
 
 Table::~Table()	{}
@@ -97,7 +100,6 @@ int Table::update( float time )
     sf::Vector2f rel_distance( 0, 0 );
     sf::Vector2f vel_difference( 0, 0 );
     sf::Vector2f delta_velocity( 0, 0 );
-    int got_in_pocket = 0;
 
 	// balls' positions update
     for (int i = 0; i < balls.size(); ++i)
@@ -115,11 +117,10 @@ int Table::update( float time )
             }
         }
 
-        got_in_pocket = balls[i].update( 1.0f, *this );
-        if ( got_in_pocket == 0 )
+        if ( balls[i].update( 1.0f, *this ) == 0 )
         {
         	result = balls[i].style;
-            balls.erase( balls.begin() + i );
+        	balls.erase( balls.begin() + i );
         }
     }
 
@@ -137,10 +138,22 @@ int Table::balls_stopped() const
 	return stop_flag;
 }
 
-/*void Table::setHit( sf::RenderWindow& window, Billiard& billiard )
+void Table::setHit( sf::RenderWindow& window )
 {
-	if ( balls[balls.get])
-}*/
+    sf::Vector2f hit_velocity( 0, 0 );
+
+	/*sf::Vector2f null_vector( 0, 0 );
+	if ( balls[balls.size() - 1].style != CUE_STYLE )
+		balls.push_back( position + sf::Vector2f( width / 4, height / 2 ),
+			null_vector, balls[balls.size() - 1].radius, , CUE_STYLE );*/
+	// hit setup
+    if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( this->balls_stopped() == 1 ) )
+    {
+        billiard[0].position = balls[balls.size() - 1].position;
+        hit_velocity = billiard[0].setHit( window, *this );
+        balls[balls.size() - 1].velocity = hit_velocity;
+    }
+}
 
 sf::Vector2f Table::getPosition() const
 {

@@ -1,6 +1,6 @@
 #pragma once
-#include "table.hpp"
 #include <SFML/Graphics.hpp>
+#include "table.hpp"
 
 #define MIN_SPEED 1e-2f
 #define FRICTION 35e-5f
