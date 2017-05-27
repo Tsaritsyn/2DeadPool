@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "table.hpp"
 #include "ball.hpp"
 #include "billiard.hpp"
@@ -99,6 +100,7 @@ int Table::update( float time, Score& score, int& player_number )
     sf::Vector2f rel_distance( 0, 0 );
     sf::Vector2f vel_difference( 0, 0 );
     sf::Vector2f delta_velocity( 0, 0 );
+    float delta_angular_velocity = 0.0;
     bool zero_score = ( score.players[0].score == 0 ) && ( score.players[1].score == 0 );
 
 	// balls' positions update
@@ -114,6 +116,10 @@ int Table::update( float time, Score& score, int& player_number )
                 delta_velocity = getNorm( rel_distance ) * getScalar( vel_difference, getNorm( rel_distance ) );
                 balls[i].velocity += delta_velocity * BALL_REFLECTION;
                 balls[j].velocity -= delta_velocity * BALL_REFLECTION;
+                delta_angular_velocity = getScalar( getNorm( rel_distance ), getNorm( balls[i].velocity ) )
+                	* getLength( vel_difference ) * ANGULAR_COEFF;
+                balls[i].angular_velocity += delta_angular_velocity;
+                balls[j].angular_velocity += delta_angular_velocity;
             }
         }
 
@@ -165,7 +171,7 @@ int Table::balls_stopped() const
 	int stop_flag = 1;
 	sf::Vector2f null_vector( 0, 0 );
 	for (int i = 0; i < balls.size(); ++i)
-		if ( balls[i].velocity != null_vector )
+		if ( ( balls[i].velocity != null_vector ) && ( balls[i].angular_velocity == 0.0 ) )
 			stop_flag = 0;
 
 	return stop_flag;
@@ -234,8 +240,21 @@ void Table::setHit( sf::RenderWindow& window, Score& score, int player_number )
     }
 
 	// hit setup
-	while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) )
+	while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) && ( window.isOpen() ) )
+	{
+		// check all the window's events that were triggered since the last iteration of the loop
+        sf::Event event; 
+        while ( window.pollEvent( event ) )
+        {
+            // close the window if closure was triggered
+            if ( event.type == sf::Event::Closed )
+            {
+                window.close();
+	            return;
+            }
+        }
 		score.draw( window, player_number );
+	}
     billiard[0].position = balls[CUE_BALL].position;
     hit_velocity = billiard[0].setHit( window, *this, score, player_number );
     balls[balls.size() - 1].velocity = hit_velocity;

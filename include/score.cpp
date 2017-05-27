@@ -29,6 +29,7 @@ Score::~Score() {}
 
 void Score::add_ball( Ball& ball, int player_number )
 {
+	ball.angular_velocity = 0.0;
 	int where_to_put = ( ball.style < BALL7 ) ^ ( players[0].ball_type == 0 );
 	if ( ball.style == BALL7 )
 	{

@@ -4,7 +4,7 @@
 
 #define BILLIARD_SCALE .5f
 #define PI 3.1415926f
-#define MAX_POWER 6
+#define MAX_POWER 7
 #define MIN_POWER .1f
 #define PULL_BACK 20.0f
 

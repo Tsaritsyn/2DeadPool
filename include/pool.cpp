@@ -8,6 +8,7 @@
 #include <thread>
 
 #define TIME_CONSTANT 2.5e3f
+#define EARLY_END 3
 
 int game( sf::RenderWindow& window, Table& table, Score& score );
 
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[])
     sf::RenderWindow window( video_mode, "2DeadPool", sf::Style::Fullscreen );
     int game_result = game( window, table, score );
 
-    if ( game_result > 2)
+    if ( game_result == EARLY_END )
         std::cout << "See ya later" << std::endl;
     else
         std::cout << player_names[game_result - 1] << " is the winner for today! Congrats!" << std::endl;
@@ -83,7 +84,7 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
                 window.close();
         }
 
-        if ( ( turn_flag != 0 ) && ( table.balls_stopped() ) )
+        if ( ( ( turn_flag != 0 ) || ( game_flag != 0 ) ) && ( table.balls_stopped() ) )
         {
             if ( game_flag != 0 )
                 return game_flag;
@@ -139,7 +140,7 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
         window.display();
     }
 
-    return 2;
+    return EARLY_END;
 }
 
 /*
