@@ -5,7 +5,6 @@
 #define MINOR_FONT_SIZE 25
 #define MAJOR_FONT_SIZE 45
 #define BALL7 7
-#define BALL8 8
 
 struct Player
 {
@@ -35,5 +34,6 @@ public:
 		const std::string& player_name2, const std::string& font_file );
 	~Score();
 
-	void draw( sf::RenderWindow& window );
+	void draw( sf::RenderWindow& window, const int player_number );
+	std::vector<int> getScore() const;
 };

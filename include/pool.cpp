@@ -37,7 +37,10 @@ int main(int argc, char const *argv[])
     sf::RenderWindow window( video_mode, "2DeadPool", sf::Style::Fullscreen );
     int game_result = game( window, table, score );
 
-    std::cout << "Player" << game_result << " won! Congrats!" << std::endl;
+    if ( game_result > 1)
+        std::cout << "See ya later" << std::endl;
+    else
+        std::cout << player_names[game_result] << " is the winner for today! Congrats!" << std::endl;
 
 	return 0;
 }
@@ -50,11 +53,21 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
     float previous_time = time.asMicroseconds();
     float dt = 0.0;
 
-    // needed for changing turns
-    int previous_score = 0;
-
+    // deisgnates the end of the turn
+    int turn_flag = 0;
     // specifies whose turn it is
     int player_number = 0;
+
+    // needed for changing turns
+    std::vector<int> previous_score( 2 );
+    previous_score[0] = 0;
+    previous_score[1] = 0;
+    std::vector<int> current_score( 2 );
+    current_score[0] = 0;
+    current_score[1] = 0;
+
+    // == 0 when player1 wins, ==1 otherwise
+    int update_result = 0;
 
     // run the program as long as the window is open
     while ( window.isOpen() )
@@ -68,24 +81,54 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
                 window.close();
         }
 
+        if ( ( turn_flag != 0 ) && ( table.balls_stopped() ) )
+        {
+            if ( ( turn_flag == GAME_LOST ) || ( turn_flag == GAME_WON ) )
+                return update_result;
+            if ( turn_flag == CUE_BALL_FOUL )
+                player_number = 1 - player_number;
+            else
+            {
+                current_score = score.getScore();
+                if ( previous_score[player_number] == current_score[player_number] )
+                    player_number = 1 - player_number; 
+                previous_score = current_score;
+            }
+            turn_flag = 0;
+        }
+
         // set hit
         if ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( table.balls_stopped() == 1 ) )
         {
-            table.setHit( window );
+            table.setHit( window, score, player_number );
+            turn_flag = 1;
         }
 
         // table update
         time = clock.getElapsedTime();
         dt = time.asMicroseconds() - previous_time;
         previous_time = time.asMicroseconds();
-        table.update( 1.0f, score, player_number );
+        update_result = table.update( 1.0f, score, player_number );
+        switch ( update_result )
+        {
+            case GAME_LOST:
+                update_result = 1 - player_number;
+                turn_flag = GAME_LOST;
+                break;
+            case GAME_WON:
+                update_result = player_number;
+                turn_flag = GAME_WON;
+                break;
+            case CUE_BALL_FOUL:
+                turn_flag = CUE_BALL_FOUL;        
+        }
 
         // table display
         window.clear( sf::Color( 0, 100, 0, 0 ) );
         table.draw( window );
-        score.draw( window );
+        score.draw( window, player_number );
         window.display();
     }
 
-    return 1;
+    return 2;
 }

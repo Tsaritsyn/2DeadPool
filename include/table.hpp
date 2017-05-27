@@ -8,6 +8,8 @@
 #define SCALE_Y 1.22555
 #define CUE_BALL 15
 #define GAME_LOST -1
+#define GAME_WON 2
+#define CUE_BALL_FOUL 3
 
 class Ball;
 class Billiard;
@@ -37,9 +39,9 @@ public:
 		const std::string& table_file, const std::string& ball_file, const std::string& billiard_file );
 	~Table();
 
-	// calculates the positions and the velocities of the balls
+											// calculates the positions and the velocities of the balls
 	int update( float time, Score& score, int& player_number );
-	int balls_stopped() const;  					// stop_flag == 1 when all balls' velocities are null
-	void setHit( sf::RenderWindow& window ); 		// ball to hit and the hit setup
-	void draw( sf::RenderWindow& window );			// draws the table
+	int balls_stopped() const;  			// stop_flag == 1 when all balls' velocities are null
+	void setHit( sf::RenderWindow& window, Score& score, int player_number ); 	// ball to hit and the hit setup
+	void draw( sf::RenderWindow& window );	// draws the table
 }; 

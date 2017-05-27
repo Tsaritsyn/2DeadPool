@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 #include "table.hpp"
 #include "ball.hpp"
@@ -123,19 +122,24 @@ int Table::update( float time, Score& score, int& player_number )
         	if ( zero_score )
         	{
         		zero_score = false;
-        		if ( i <= BALL7 )
+        		if ( i < BALL7 )
         			score.players[1 - player_number].ball_type = 1;
-        		else if ( ( i == BALL8 ) && ( score.players[player_number].score <= BALL7 ) )
+        		else if ( ( i == BALL7 ) && ( score.players[player_number].score < BALL7 ) )
         				return GAME_LOST;
         			else
         				score.players[player_number].ball_type = 1;
         	}
-        	if ( balls[i].style == CUE_BALL )
+        	if ( i == CUE_BALL )
         		balls[i].position = sf::Vector2f( -1, -1 ) * balls[i].radius;
+        	else if ( ( i == BALL7 ) && ( score.players[player_number].score != BALL7 ) )
+        		return GAME_LOST;
         	else
        			score.add_ball( balls[i] );
         }
     }
+
+    if ( score.players[player_number].score == BALL7 + 1 )
+    	return GAME_WON;
 
     return 0;
 }
@@ -151,7 +155,7 @@ int Table::balls_stopped() const
 	return stop_flag;
 }
 
-void Table::setHit( sf::RenderWindow& window )
+void Table::setHit( sf::RenderWindow& window, Score& score, int player_number )
 {
     sf::Vector2f hit_velocity( 0, 0 );
 
@@ -164,7 +168,8 @@ void Table::setHit( sf::RenderWindow& window )
     	float lower_border = this->borders[9].y - balls[CUE_BALL].radius;
 
        	while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) );
-    	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
+	       	score.draw( window, player_number );
+    	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( window.isOpen() ) )
     	{
     		while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( window.isOpen() ) )
     		{
@@ -202,18 +207,21 @@ void Table::setHit( sf::RenderWindow& window )
 	    		// table display
 		        window.clear( sf::Color( 0, 100, 0, 0 ) );
 		        this->draw( window );
+		        score.draw( window, player_number );
 		        window.display();
 	    	}
 	    
 	    	if ( balls[CUE_BALL].position == sf::Vector2f( -1 , -1 ) * balls[CUE_BALL].radius )
-	    		while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) );
+	    		while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) )
+	    			score.draw( window, player_number );
     	}
     }
 
 	// hit setup
-	while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) ) {}	
+	while ( !( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) )
+		score.draw( window, player_number );
     billiard[0].position = balls[balls.size() - 1].position;
-    hit_velocity = billiard[0].setHit( window, *this );
+    hit_velocity = billiard[0].setHit( window, *this, score, player_number );
     balls[balls.size() - 1].velocity = hit_velocity;
 }
 

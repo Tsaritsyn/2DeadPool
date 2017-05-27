@@ -1,4 +1,4 @@
-EXE = main_Ivan
+EXE = pool
 BALL = ball
 TABLE = table
 BILLIARD = billiard

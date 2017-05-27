@@ -1,4 +1,5 @@
 #include "billiard.hpp"
+#include "score.hpp"
 #include "vector_operations.hpp"
 #include <cmath>
 #include <SFML/Graphics.hpp>
@@ -25,28 +26,13 @@ Billiard::Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction
 
 Billiard::~Billiard() {}
 
-const sf::Vector2f& Billiard::getPosition() const
-{
-	return position;
-}
-
-const sf::Sprite& Billiard::getSprite() const
-{
-	return sprite;
-}
-
-void Billiard::setPosition( const sf::Vector2f& position_ )
-{
-	position = position_;
-}
-
 void Billiard::setRotation( const sf::Vector2f& mousePosition_ )
 {
 	direction = position - mousePosition_;
 	sprite.setRotation( 142 + atan2f( direction.y, direction.x ) * 180 / PI );
 }
 
-sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
+sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table, Score& score, int player_number )
 {
 	// hit power
 	float power = 0.0;
@@ -60,10 +46,8 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 	sf::RectangleShape powerBar_color;
 	powerBar_color.setFillColor( sf::Color( 255, 0, 0 ) );
 
-	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
+	while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( window.isOpen() ) )
 	{
-		if ( power < MIN_POWER )
-			while ( !sf::Mouse::isButtonPressed( sf::Mouse::Left ) );
 		while ( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( window.isOpen() ) )
 		{
 			// check all the window's events that were triggered since the last iteration of the loop
@@ -101,10 +85,30 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table )
 	        window.clear( sf::Color( 0, 100, 0, 0 ) );
 	        table.draw( window );
 	        window.draw( sprite );
+	        score.draw( window, player_number );
 	        window.draw( powerBar );
 	        window.draw( powerBar_color );
 	        window.display();
 		}
+		if ( power < MIN_POWER )
+			while ( !sf::Mouse::isButtonPressed( sf::Mouse::Left ) && ( window.isOpen() ) )
+			{
+				sf::Event event; 
+		        while ( window.pollEvent( event ) )
+		        {
+		            // close the window if closure was triggered
+		            if ( event.type == sf::Event::Closed )
+		            {
+		            	window.close();
+		         		return sf::Vector2f( 0, 0 );
+		            }
+		        }
+
+				window.clear( sf::Color( 0, 100, 0, 0 ) );
+	        	table.draw( window );
+	        	score.draw( window, player_number );
+	        	window.display();
+			}
 	}
 
 	return getNorm( direction ) * power;

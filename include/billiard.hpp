@@ -25,11 +25,7 @@ public:
 	Billiard( const sf::Vector2f& position_, const sf::Vector2f& direction_, const std::string& filename );
 	~Billiard();
 
-	const sf::Vector2f& getPosition() const;
-	const sf::Sprite& getSprite() const;
-
-	void setPosition( const sf::Vector2f& position_ );
 	void setRotation( const sf::Vector2f& mousePosition_ );
 
-	sf::Vector2f setHit( sf::RenderWindow& window, Table& table );
+	sf::Vector2f setHit( sf::RenderWindow& window, Table& table, Score& score, int player_number );
 };

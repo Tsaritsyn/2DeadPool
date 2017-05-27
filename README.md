@@ -7,7 +7,7 @@ A simple version of the American "Eight-ball" game
 2. ### On Linux:
 * make sure you have g++ and make installed( use sudo apt-get install g++/make )
 * navigate to the 2DeadPool/include folder and run the makefile by typing "make" in the bash
-* run the compiled file called ""
+* run the compiled file called "pool"
 ## Built With
 [SFML](https://www.sfml-dev.org/download.php): 2D graphics
 ### Authors

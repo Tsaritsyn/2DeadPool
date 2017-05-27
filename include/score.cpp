@@ -42,8 +42,20 @@ void Score::add_ball( Ball& ball )
 	}
 }
 
-void Score::draw( sf::RenderWindow& window )
+void Score::draw( sf::RenderWindow& window, const int player_number )
 {
+	players[player_number].text.setColor( sf::Color::White );
+	players[player_number].text.setCharacterSize( MAJOR_FONT_SIZE );
+	players[1 - player_number].text.setColor( sf::Color::Black );
+	players[1 - player_number].text.setCharacterSize( MINOR_FONT_SIZE );
 	window.draw( players[0].text );
 	window.draw( players[1].text );
+}
+
+std::vector<int> Score::getScore() const
+{
+	std::vector<int> temp_vector( 2 );
+	temp_vector[0] = players[0].score;
+	temp_vector[1] = players[1].score;
+	return temp_vector;
 }
