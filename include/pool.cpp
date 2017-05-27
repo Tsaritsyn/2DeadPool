@@ -120,7 +120,8 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
                 turn_flag = GAME_WON;
                 break;
             case CUE_BALL_FOUL:
-                turn_flag = CUE_BALL_FOUL;        
+                turn_flag = CUE_BALL_FOUL;
+                break;        
         }
 
         // table display

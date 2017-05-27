@@ -109,6 +109,9 @@ sf::Vector2f Billiard::setHit( sf::RenderWindow& window, Table& table, Score& sc
 	        	score.draw( window, player_number );
 	        	window.display();
 			}
+
+		mouse_position = sf::Vector2f( sf::Mouse::getPosition( window ) );
+		initial_power = getLength( mouse_position - position );
 	}
 
 	return getNorm( direction ) * power;

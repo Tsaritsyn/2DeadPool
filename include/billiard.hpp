@@ -6,7 +6,7 @@
 #define PI 3.1415926f
 #define MAX_POWER 6
 #define MIN_POWER .1f
-#define PULL_BACK 15.0f
+#define PULL_BACK 20.0f
 
 class Billiard
 {

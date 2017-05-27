@@ -25,7 +25,7 @@ class Score
 	sf::Font font;
 
 	// puts the balls got into a pocket to the appropriate score
-	void add_ball( Ball& ball );
+	void add_ball( Ball& ball, int player_number );
 
 	friend class Table;
 

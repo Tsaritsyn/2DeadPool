@@ -27,10 +27,12 @@ Score::Score( const sf::VideoMode& video_mode,	const std::string& player_name1,
 
 Score::~Score() {}
 
-void Score::add_ball( Ball& ball )
+void Score::add_ball( Ball& ball, int player_number )
 {
-	int where_to_put = ( ball.style <= BALL7 ) ^ ( players[0].ball_type == 0 );
-	if ( where_to_put == 0)
+	int where_to_put = ( ball.style < BALL7 ) ^ ( players[0].ball_type == 0 );
+	if ( ball.style == BALL7 )
+		ball.position = left_score + sf::Vector2f( 0, ball.radius * 2.5f * players[player_number].score );
+	else if ( where_to_put == 0)
 	{
 		ball.position = left_score + sf::Vector2f( 0, ball.radius * 2.5f * players[0].score );
 		players[0].score++;
