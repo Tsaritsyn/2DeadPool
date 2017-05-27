@@ -149,6 +149,7 @@ int Table::update( float time, Score& score, int& player_number )
         		}
         	else
        			score.add_ball( balls[i], player_number );
+
        		if ( score.players[player_number].score == BALL7 + 1 )
 		    	return GAME_WON;
 		    if ( score.players[1 - player_number].score == BALL7 + 1 )

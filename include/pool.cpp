@@ -37,10 +37,10 @@ int main(int argc, char const *argv[])
     sf::RenderWindow window( video_mode, "2DeadPool", sf::Style::Fullscreen );
     int game_result = game( window, table, score );
 
-    if ( game_result > 1)
+    if ( game_result > 2)
         std::cout << "See ya later" << std::endl;
     else
-        std::cout << player_names[game_result] << " is the winner for today! Congrats!" << std::endl;
+        std::cout << player_names[game_result - 1] << " is the winner for today! Congrats!" << std::endl;
 
 	return 0;
 }
@@ -57,6 +57,8 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
     int turn_flag = 0;
     // specifies whose turn it is
     int player_number = 0;
+    int cue_flag = 0;
+    int game_flag = 0;
 
     // needed for changing turns
     std::vector<int> previous_score( 2 );
@@ -83,10 +85,13 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
 
         if ( ( turn_flag != 0 ) && ( table.balls_stopped() ) )
         {
-            if ( ( turn_flag == GAME_LOST ) || ( turn_flag == GAME_WON ) )
-                return update_result;
-            if ( turn_flag == CUE_BALL_FOUL )
+            if ( game_flag != 0 )
+                return game_flag;
+            if ( cue_flag )
+            {
                 player_number = 1 - player_number;
+                cue_flag = 0;
+            }
             else
             {
                 current_score = score.getScore();
@@ -114,13 +119,16 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
             case GAME_LOST:
                 update_result = 1 - player_number;
                 turn_flag = GAME_LOST;
+                game_flag = 2 - player_number;
                 break;
             case GAME_WON:
                 update_result = player_number;
                 turn_flag = GAME_WON;
+                game_flag = 1 + player_number;
                 break;
             case CUE_BALL_FOUL:
                 turn_flag = CUE_BALL_FOUL;
+                cue_flag = 1;
                 break;        
         }
 
@@ -133,3 +141,13 @@ int game( sf::RenderWindow& window, Table& table, Score& score )
 
     return 2;
 }
+
+/*
+// hint line setup
+sf::Vertex line[] =
+{
+    position,
+    position + getNorm( direction ) * HINT;
+};
+window.draw(line, 2, sf::Lines);
+*/
